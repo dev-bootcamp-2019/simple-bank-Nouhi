@@ -23,29 +23,29 @@ contract('SimpleBank', function(accounts) {
     const bank = await SimpleBank.deployed();
 
     await bank.enroll({from: bob});
-
     await bank.deposit({from: alice, value: deposit});
     const balance = await bank.balance({from: alice});
     assert.equal(deposit.toString(), balance, 'deposit amount incorrect, check deposit method');
 
     const expectedEventResult = {accountAddress: alice, amount: deposit};
-
     const LogDepositMade = await bank.LogDepositMade();
     const log = await new Promise(function(resolve, reject) {
+
         LogDepositMade.watch(function(error, log){ resolve(log);});
     });
 
     const logAccountAddress = log.args.accountAddress;
     const logDepositAmount = log.args.amount.toNumber();
 
+    console.log(log);
     assert.equal(expectedEventResult.accountAddress, logAccountAddress, "LogDepositMade event accountAddress property not emitted, check deposit method");
     assert.equal(expectedEventResult.amount, logDepositAmount, "LogDepositMade event amount property not emitted, check deposit method");
   });
-
+  
   it("should withdraw correct amount", async () => {
     const bank = await SimpleBank.deployed();
     const initialAmount = 0;
-   
+
     await bank.withdraw(deposit, {from: alice});
     const balance = await bank.balance({from: alice});
 
@@ -68,4 +68,5 @@ contract('SimpleBank', function(accounts) {
     assert.equal(expectedEventResult.withdrawAmount, withdrawAmount, "LogWithdrawal event withdrawalAmount property not emitted, check deposit method");
 
   });
+  
 });
